@@ -8,48 +8,60 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
+  late final TabController tabController;
+
+  @override
+  void initState() {
+    tabController = TabController(length: 2, vsync: this);
+    tabController.addListener(() {
+      if (tabController.indexIsChanging) {
+        setState(() {});
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Problem'),
+        title: const Text('Problem'),
       ),
       body: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            for (int i = 0; i < 2; i++) ...{TopWidget()},
-            DefaultTabController(
-              length: 2,
-              child: Scaffold(
-                appBar: AppBar(
-                  bottom: TabBar(
-                    tabs: [
-                      Tab(icon: Icon(Icons.contacts), text: "Tab 1"),
-                      Tab(icon: Icon(Icons.camera_alt), text: "Tab 2")
-                    ],
+            for (int i = 0; i < 2; i++) ...{const TopWidget()},
+            TabBar(
+              controller: tabController,
+              tabs: const [
+                Tab(icon: Icon(Icons.contacts), text: "Tab 1"),
+                Tab(icon: Icon(Icons.camera_alt), text: "Tab 2")
+              ],
+            ),
+            
+               [ const SizedBox(
+                  height: 100,
+                  child: Center(
+                    child: Text('First tab content with 100 height'),
                   ),
                 ),
-                body: TabBarView(
-                  children: [
-                    Container(
-                      height: 100,
-                      child: Center(
-                        child: Text('First tab content with 100 height'),
-                      ),
-                    ),
-                    Container(
-                      height: 200,
-                      child: Center(
-                        child: Text('Second tab content with 200 height'),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            for (int i = 0; i < 6; i++) ...{TopWidget()},
+                const SizedBox(
+                  height: 200,
+                  child: Center(
+                    child: Text('Second tab content with 200 height'),
+                  ),
+                ),][tabController.index],
+              
+            for (int i = 0; i < 6; i++) ...{const TopWidget()},
           ],
         ),
       ),
